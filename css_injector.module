@@ -42,18 +42,21 @@ function css_injector_menu() {
       'page callback' => 'drupal_get_form',
       'page arguments' => array('css_injector_edit'),
       'file' => 'css_injector.admin.inc',
+      'type' => MENU_CALLBACK,
     ),
     'admin/settings/css_injector/add' => array(
       'title' => 'Add CSS injector rule',
       'page callback' => 'drupal_get_form',
       'page arguments' => array('css_injector_edit'),
       'file' => 'css_injector.admin.inc',
+      'type' => MENU_CALLBACK,
     ),
     'admin/settings/css_injector/delete' => array(
-      'title' => 'Add CSS injector rule',
+      'title' => 'Delete CSS injector rule',
       'page callback' => 'drupal_get_form',
       'page arguments' => array('css_injector_delete_confirm'),
       'file' => 'css_injector.admin.inc',
+      'type' => MENU_CALLBACK,
     ),
   );
   return $items;

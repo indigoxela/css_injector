@@ -67,12 +67,16 @@ function theme_css_injector_admin_form(&$form) {
   $link = l(t('Click here'), 'admin/settings/css_injector/add');
   $row = array();
   if (empty($rows)) {
-    $row[]['data'] = t('No CSS injection rules have been set up yet. !url to create one.', array('!url' => $link));
-    $row[]['colspan'] = 3;
+    $row[] = array(
+      'data' => t('No CSS injection rules have been set up yet. !url to create one.', array('!url' => $link)),
+      'colspan' => 3,
+    );
   }
   else {
-    $row[]['data'] = t('!url to add a new CSS injection rule.', array('!url' => $link));
-    $row[]['colspan'] = 4;
+    $row[] = array(
+      'data' => t('!url to add a new CSS injection rule.', array('!url' => $link)),
+      'colspan' => 3,
+    );
   }
   $rows[] = $row;
 

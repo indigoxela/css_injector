@@ -1,0 +1,4 @@
+;$Id$
+name = CSS Injector
+description = Adds CSS to the page output based on configurable rules.
+core = 6.x

@@ -130,6 +130,7 @@ function css_injector_edit($form_state, $crid = NULL) {
   $form['css_text'] = array(
     '#type' => 'textarea',
     '#title' => t('CSS code'),
+    '#rows' => 10,
     '#default_value' => $rule['css_text'],
     '#required' => TRUE,
   );

@@ -8,6 +8,7 @@ function css_injector_admin_form() {
   $rules = _css_injector_load_rule(NULL, TRUE);
   $path = drupal_get_path('module', 'css_injector') .'/';
   $form = array();
+  $form['#tree'] = TRUE;
   foreach($rules as $rule) {
     $form['rules'][$rule['crid']]['#rule'] = $rule;
     $form['rules'][$rule['crid']]['edit'] = array(
@@ -177,7 +178,7 @@ function css_injector_edit($form_state, $crid = NULL) {
     '#description' => t(''),
     '#default_value' => $rule['preprocess'],
   );
-  
+
   $form['buttons']['save'] = array(
     '#type' => 'submit',
     '#value' => t('Save'),

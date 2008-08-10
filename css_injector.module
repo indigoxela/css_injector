@@ -1,5 +1,5 @@
 <?php
-// $Id
+// $Id$
 
 /**
  * @file
@@ -9,13 +9,30 @@
  */
 
 /**
- * Implementation of hook_init.
+ * Implementation of hook_help().
+ */
+function css_injector_help($path, $arg) {
+  $output = '';
+  switch ($path) {
+    case 'admin/settings/modules#description':
+      $output .= t('Allows administrators to inject CSS into the page output based on configurable rules.');
+      break;
+    case 'admin/settings/css_injector':
+      $output .= '<p>'. t('Use CSS injection rules to add small snippets of CSS to the page output when specific criteria are met. For example, a simple rule could change the page background color at night or float a particular div to the right on node editing pages.') .'</p>';
+      $output .= '<p>'. t('An important point to keep in mind is that in Drupal, themes always get last crack at display. Theme CSS is applied after modules. That means themes can and will override CSS put into play by CSS Injector module. If you want to override CSS that a theme is already applying, use CSS rules the way they were intended -- higher specificity rules, or the !important flag.') .'</p>';
+      break;
+  }
+  return $output;
+}
+
+/**
+ * Implementation of hook_init().
  * Checks to see whether any CSS files should be added to the current page,
  * based on rules configured by the site administrator.
  */
 function css_injector_init() {
   $css_rules = _css_injector_load_rule();
-  foreach($css_rules as $css_rule) {
+  foreach ($css_rules as $css_rule) {
     if (_css_injector_evaluate_rule($css_rule)) {
       drupal_add_css(file_create_path($css_rule['file_path']), 'module', $css_rule['media'], $css_rule['preprocess']);
     }
@@ -23,7 +40,7 @@ function css_injector_init() {
 }
 
 /**
- * Implementation of hook_menu.
+ * Implementation of hook_menu().
  * Defines menu callbacks for CSS Injector's configuration pages.
  */
 function css_injector_menu() {
@@ -64,6 +81,9 @@ function css_injector_menu() {
   return $items;
 }
 
+/**
+ * Implementation of hook_theme().
+ */
 function css_injector_theme() {
   $items['css_injector_admin_form'] = array(
     'arguments' => array('form' => array()),
@@ -72,12 +92,15 @@ function css_injector_theme() {
   return $items;
 }
 
+/**
+ * Implementation of hook_perm().
+ */
 function css_injector_perm() {
   return array('administer css injection');
 }
 
 /**
- * Helper function to load all CSS injection rules
+ * Helper function to load all CSS injection rules.
  */
 function _css_injector_load_rule($crid = NULL, $reset = FALSE) {
   static $rules;
@@ -104,7 +127,7 @@ function _css_injector_load_rule($crid = NULL, $reset = FALSE) {
 }
 
 /**
- * Helper function to delete an existing rule and its accompanying file
+ * Helper function to delete an existing rule and its accompanying file.
  */
 function _css_injector_delete_rule($crid) {
   if ($rule = _css_injector_load_rule($crid)) {
@@ -114,10 +137,10 @@ function _css_injector_delete_rule($crid) {
 }
 
 /**
- * Helper function to determine whether a rule's conditions are met
+ * Helper function to determine whether a rule's conditions are met.
  */
 function _css_injector_evaluate_rule($css_rule = array()) {
-  // Match path if necessary
+  // Match path if necessary.
   if (!empty($css_rule['rule_conditions'])) {
     if ($css_rule['rule_type'] < 2) {
       $path = drupal_get_path_alias($_GET['q']);
@@ -127,8 +150,9 @@ function _css_injector_evaluate_rule($css_rule = array()) {
         $page_match = $page_match || drupal_match_path($_GET['q'], $css_rule['rule_conditions']);
       }
       // When $css_rule['rule_type'] has a value of 0, the rule is matched on
-      // all pages except those listed in $css_rule['rule_conditions']. When set to 1, it
-      // is displayed only on those pages listed in $css_rule['rule_type'].
+      // all pages except those listed in $css_rule['rule_conditions'].
+      // When set to 1, it is displayed only on those pages listed in
+      // $css_rule['rule_type'].
       $page_match = !($css_rule['rule_type'] xor $page_match);
     }
     else {

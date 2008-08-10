@@ -9,7 +9,7 @@ function css_injector_admin_form() {
   $path = drupal_get_path('module', 'css_injector') .'/';
   $form = array();
   $form['#tree'] = TRUE;
-  foreach($rules as $rule) {
+  foreach ($rules as $rule) {
     $form['rules'][$rule['crid']]['#rule'] = $rule;
     $form['rules'][$rule['crid']]['edit'] = array(
       '#type' => 'image_button',
@@ -55,7 +55,7 @@ function theme_css_injector_admin_form(&$form) {
   $headers = array(t('Title'), t('File path'), t('Actions'));
   $rows = array();
   if (!empty($form['rules'])) {
-    foreach(element_children($form['rules']) as $crid) {
+    foreach (element_children($form['rules']) as $crid) {
       $row = array();
       $rule = $form['rules'][$crid]['#rule'];
       $row[] = check_plain($rule['title']);
@@ -81,7 +81,6 @@ function theme_css_injector_admin_form(&$form) {
   }
   $rows[] = $row;
 
-  $output = '<p>'. t("Use CSS injection rules to add small snippets of CSS to the page output when specific criteria are met. For example, a simple rule could change the page background color at night or float a particular div to the right on node editing pages.") .'</p>';
   $output .= theme('table', $headers, $rows);
   $output .= drupal_render($form);
   return $output;
@@ -230,7 +229,7 @@ function css_injector_edit_save($form, &$form_state) {
 
 
 /**
- * Menu callback -- ask for confirmation of rule deletion
+ * Menu callback -- ask for confirmation of rule deletion.
  */
 function css_injector_delete_confirm(&$form_state, $crid) {
   $form['crid'] = array(
@@ -249,7 +248,7 @@ function css_injector_delete_confirm(&$form_state, $crid) {
 }
 
 /**
- * Execute node deletion
+ * Execute node deletion.
  */
 function css_injector_delete_confirm_submit($form, &$form_state) {
   if ($form_state['values']['confirm']) {

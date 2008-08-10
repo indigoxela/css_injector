@@ -1,10 +1,16 @@
 <?php
 // $Id$
 
+/**
+ * Implementation of hook_install().
+ */
 function css_injector_install() {
   drupal_install_schema('css_injector');
 }
 
+/**
+ * Implementation of hook_schema().
+ */
 function css_injector_schema() {
   $schema['css_injector_rule'] = array(
     'fields' => array(
@@ -50,6 +56,9 @@ function css_injector_schema() {
   return $schema;
 }
 
+/**
+ * Implementation of hook_uninstall().
+ */
 function css_injector_uninstall() {
   cache_clear_all('css_injector:*', 'cache', TRUE);
   $results = db_query("SELECT * FROM {css_injector_rule}");

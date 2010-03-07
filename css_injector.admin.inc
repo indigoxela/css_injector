@@ -167,7 +167,6 @@ function css_injector_edit($form_state, $crid = NULL) {
   $form['media'] = array(
     '#type' => 'select',
     '#title' => t('Media'),
-    '#description' => t(''),
     '#options' => array('all' => t('All'), 'screen' => t('Screen'), 'print' => t('Print')),
     '#default_value' => $rule['media'],
   );
@@ -175,7 +174,6 @@ function css_injector_edit($form_state, $crid = NULL) {
   $form['preprocess'] = array(
     '#type' => 'checkbox',
     '#title' => t('Preprocess CSS'),
-    '#description' => t(''),
     '#default_value' => $rule['preprocess'],
   );
 

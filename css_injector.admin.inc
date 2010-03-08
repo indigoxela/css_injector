@@ -51,7 +51,7 @@ function css_injector_admin_delete_button($form, &$form_state) {
 /**
  * Theme function for the CSS Injector admin overview form.
  */
-function theme_css_injector_admin_form(&$form) {
+function theme_css_injector_admin_form($form) {
   $headers = array(t('Title'), t('File path'), t('Actions'));
   $rows = array();
   if (!empty($form['rules'])) {

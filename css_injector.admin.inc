@@ -179,6 +179,11 @@ function css_injector_edit($form_state, $crid = NULL) {
     '#value' => t('Save'),
     '#submit' => array('css_injector_edit_save'),
   );
+  $form['buttons']['save_and_continue'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save and Continue'),
+    '#submit' => array('css_injector_edit_save_and_continue'),
+  );
 
   if (!empty($rule['crid'])) {
     $form['buttons']['delete'] = array(
@@ -215,6 +220,14 @@ function css_injector_edit_save($form, &$form_state) {
   drupal_set_message('Your CSS injection rule was saved.');
   $form_state['redirect'] = 'admin/settings/css_injector';
 }
+
+/**
+ * Save and continue callback for the CSS rule edit form.
+ */
+ function css_injector_edit_save_and_continue($form, &$form_state) {
+   css_injector_edit_save($form, $form_state);
+   $form_state['redirect'] = 'admin/settings/css_injector/edit/' . $form_state['rule']['crid'];
+ } 
 
 
 /**

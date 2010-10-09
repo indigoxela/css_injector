@@ -2,14 +2,19 @@
 // $Id$
 
 /**
- * Implementation of hook_install().
+ * @file
+ * Install, update and uninstall functions for the css_injector module.
+ *
+ */
+
+/**
+ * Implements hook_install().
  */
 function css_injector_install() {
-  drupal_install_schema('css_injector');
 }
 
 /**
- * Implementation of hook_schema().
+ * Implements hook_schema().
  */
 function css_injector_schema() {
   $schema['css_injector_rule'] = array(
@@ -52,22 +57,37 @@ function css_injector_schema() {
 }
 
 /**
- * Implementation of hook_uninstall().
+ * Implements hook_uninstall().
  */
 function css_injector_uninstall() {
   cache_clear_all('css_injector:*', 'cache', TRUE);
-  $results = db_query("SELECT * FROM {css_injector_rule}");
-  while ($rule = db_fetch_array($results)) {
-    file_delete(file_create_path($rule['file_path']));
+  $rules = db_query("SELECT * FROM {css_injector_rule}", array(), array('fetch' => PDO::FETCH_ASSOC))->fetchAllAssoc('crid');
+  foreach($rules as $id => $rule) {
+    file_unmanaged_delete(_css_injector_rule_path($id));
   }
-  db_query("DROP TABLE {css_injector_rule}");
+  db_drop_table('css_injector_rule');
 }
 
 /**
- * Removes file path field from table
+ * Implements hook_requirements().
+ * We'll use this to prevent installation of the module if the file directory
+ * is not available and writable.
  */
-function css_injector_update_6000() {
-  $ret = array();
-  db_drop_field($ret, 'css_injector_rule', 'file_path');
-  return $ret;
+function css_injector_requirements($phase) {
+  $status = REQUIREMENT_OK;
+  $dir = 'public://css_injector';
+  if (!file_prepare_directory($dir, FILE_MODIFY_PERMISSIONS)) {
+    if (!file_prepare_directory($dir, FILE_CREATE_DIRECTORY)) {
+      $status = REQUIREMENT_ERROR;
+    }
+  }
+  $requirements = array(
+    'css_injector' => array(
+      'title' => t('CSS Injector directory writable'),
+      'description' => $status == REQUIREMENT_OK ? t('CSS Injector Directory %dir is writable', array('%dir' => $dir)) : t('Directory %dir is not writable', array('%dir' => $dir)),
+      'severity' => $status,
+      'value' => t('Not writable'),
+    ),
+  );
+  return $requirements;
 }

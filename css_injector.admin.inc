@@ -43,7 +43,7 @@ function css_injector_admin_form($form, &$form_state) {
 function css_injector_admin_edit_button($form, &$form_state) {
   $button = $form_state['triggering_element'];
   $crid = $button['#crid'];
-  $form_state['redirect'] = 'admin/config/development/css_injector/edit/' . $crid;
+  $form_state['redirect'] = 'admin/config/development/css-injector/edit/' . $crid;
 }
 
 /**
@@ -53,7 +53,7 @@ function css_injector_admin_edit_button($form, &$form_state) {
 function css_injector_admin_delete_button($form, &$form_state) {
   $button = $form_state['triggering_element'];
   $crid = $button['#crid'];
-  $form_state['redirect'] = 'admin/config/development/css_injector/delete/' . $crid;
+  $form_state['redirect'] = 'admin/config/development/css-injector/delete/' . $crid;
 }
 
 /**
@@ -74,7 +74,7 @@ function theme_css_injector_admin_form($variables) {
     }
   }
 
-  $link = l(t('Create a new rule'), 'admin/config/development/css_injector/add');
+  $link = l(t('Create a new rule'), 'admin/config/development/css-injector/add');
   $row = array();
   if (empty($rows)) {
     $row[] = array(
@@ -227,7 +227,7 @@ function css_injector_edit_save($form, &$form_state) {
   _css_injector_load_rule(NULL, TRUE);
 
   drupal_set_message(t('Your CSS injection rule %title was saved.', array('%title' => $rule['title'])));
-  $form_state['redirect'] = 'admin/config/development/css_injector';
+  $form_state['redirect'] = 'admin/config/development/css-injector';
 }
 
 /**
@@ -235,7 +235,7 @@ function css_injector_edit_save($form, &$form_state) {
  */
 function css_injector_edit_save_and_continue($form, &$form_state) {
   css_injector_edit_save($form, $form_state);
-  $form_state['redirect'] = 'admin/config/development/css_injector/edit/' . $form_state['values']['rule']['crid'];
+  $form_state['redirect'] = 'admin/config/development/css-injector/edit/' . $form_state['values']['rule']['crid'];
 }
 
 
@@ -251,7 +251,7 @@ function css_injector_delete_confirm($form, &$form_state, $crid) {
   $rule = _css_injector_load_rule($crid);
   return confirm_form($form,
     t('Are you sure you want to delete %title?', array('%title' => $rule['title'])),
-    isset($_GET['destination']) ? $_GET['destination'] : 'admin/config/development/css_injector',
+    isset($_GET['destination']) ? $_GET['destination'] : 'admin/config/development/css-injector',
     t('This action cannot be undone.'),
     t('Delete'),
     t('Cancel')
@@ -266,6 +266,6 @@ function css_injector_delete_confirm_submit($form, &$form_state) {
     _css_injector_delete_rule($form_state['values']['crid']);
   }
 
-  $form_state['redirect'] = 'admin/config/development/css_injector';
+  $form_state['redirect'] = 'admin/config/development/css-injector';
   return;
 }

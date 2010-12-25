@@ -33,7 +33,7 @@ function css_injector_help($path, $arg) {
     case 'admin/config/modules#description':
       $output .= t('Allows administrators to inject CSS into the page output based on configurable rules.');
       break;
-    case 'admin/config/development/css_injector':
+    case 'admin/config/development/css-injector':
       $output .= '<p>' . t('Use CSS injection rules to add small snippets of CSS to the page output when specific criteria are met. For example, a simple rule could change the page background color at night or float a particular div to the right on node editing pages.') . '</p>';
       break;
   }
@@ -50,7 +50,7 @@ function css_injector_init() {
   foreach ($css_rules as $css_rule) {
     if (_css_injector_evaluate_rule($css_rule)) {
       $filepath = _css_injector_rule_path($css_rule['crid']);
-      drupal_add_css($filepath, array('type' => 'file', 'media' => $css_rule['media'], 'preprocess' => $css_rule['preprocess']));
+      drupal_add_css($filepath, array('type' => 'file', 'group' => CSS_THEME, 'media' => $css_rule['media'], 'preprocess' => $css_rule['preprocess']));
     }
   }
 }
@@ -68,8 +68,8 @@ function css_injector_init() {
 function css_injector_css_alter(&$css) {
   $css_rules = _css_injector_load_rule();
   foreach ($css_rules as $css_rule) {
-    if (_css_injector_evaluate_rule($css_rule)) {
-      $filepath = _css_injector_rule_path($css_rule['crid']);
+    $filepath = _css_injector_rule_path($css_rule['crid']);
+    if (!empty($css[$filepath])) {
       $css[$filepath]['weight'] = 200 + $css_rule['crid'];
     }
   }
@@ -81,7 +81,7 @@ function css_injector_css_alter(&$css) {
  */
 function css_injector_menu() {
   $items = array(
-    'admin/config/development/css_injector' => array(
+    'admin/config/development/css-injector' => array(
       'title' => 'CSS injector',
       'description' => 'Add CSS to the page output based on configurable rules.',
       'page callback' => 'drupal_get_form',
@@ -89,7 +89,7 @@ function css_injector_menu() {
       'access arguments' => array('administer css injection'),
       'file' => 'css_injector.admin.inc',
     ),
-    'admin/config/development/css_injector/edit' => array(
+    'admin/config/development/css-injector/edit' => array(
       'title' => 'Edit CSS injector rule',
       'page callback' => 'drupal_get_form',
       'page arguments' => array('css_injector_edit'),
@@ -97,7 +97,7 @@ function css_injector_menu() {
       'file' => 'css_injector.admin.inc',
       'type' => MENU_CALLBACK,
     ),
-    'admin/config/development/css_injector/add' => array(
+    'admin/config/development/css-injector/add' => array(
       'title' => 'Add CSS injector rule',
       'page callback' => 'drupal_get_form',
       'page arguments' => array('css_injector_edit'),
@@ -105,7 +105,7 @@ function css_injector_menu() {
       'file' => 'css_injector.admin.inc',
       'type' => MENU_CALLBACK,
     ),
-    'admin/config/development/css_injector/delete' => array(
+    'admin/config/development/css-injector/delete' => array(
       'title' => 'Delete CSS injector rule',
       'page callback' => 'drupal_get_form',
       'page arguments' => array('css_injector_delete_confirm'),

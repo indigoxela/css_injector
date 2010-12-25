@@ -32,7 +32,7 @@ class CSSInjectorTest extends DrupalWebTestCase {
    */
   function testCSSInjectionUI() {
 
-    $base_url = 'admin/config/development/css_injector';
+    $base_url = 'admin/config/development/css-injector';
     $add_url = $base_url . '/add';
 
     // To add to these rules, just copy and paste.
@@ -61,7 +61,7 @@ class CSSInjectorTest extends DrupalWebTestCase {
         'css_text' => '.content { background-color: green; }',
         'rule_type' => CSS_INJECTOR_PHP, // add on listed pages.
         'rule_conditions' => '<?php print (arg(0) == "admin"); ?>',  // show only on /admin
-        'pages_with' => array('admin/config/development/css_injector'), // Test page where it should show up.
+        'pages_with' => array('admin/config/development/css-injector'), // Test page where it should show up.
         'pages_without' => array('user'), // front page should not have this one.
       ),
 

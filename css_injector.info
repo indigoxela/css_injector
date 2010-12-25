@@ -7,3 +7,5 @@ files[] = css_injector.admin.inc
 files[] = css_injector.install
 files[] = css_injector.module
 files[] = css_injector.test
+
+configure = admin/config/development/css-injector

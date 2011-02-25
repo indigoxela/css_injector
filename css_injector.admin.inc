@@ -1,5 +1,4 @@
 <?php
-// $Id$
 /**
  * @file css_injector.admin.inc
  * Administrative interface for CSS Injector.

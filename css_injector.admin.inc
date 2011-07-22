@@ -67,7 +67,7 @@ function theme_css_injector_admin_form($variables) {
       $row = array();
       $rule = $form['rules'][$crid]['#rule'];
       $row[] = check_plain($rule['title']);
-      $row[] = check_plain(_css_injector_rule_path($rule['crid']));
+      $row[] = _css_injector_rule_uri($rule['crid']);
       $row[] = drupal_render($form['rules'][$crid]);
       $rows[] = $row;
     }
@@ -101,7 +101,7 @@ function css_injector_edit($form, $form_state, $crid = NULL) {
   if (isset($crid)) {
     $rule = _css_injector_load_rule($crid, TRUE);
 
-    $path = _css_injector_rule_path($rule['crid']);
+    $path = _css_injector_rule_uri($rule['crid']);
     if (file_exists($path)) {
       $rule['css_text'] = file_get_contents($path);
     }

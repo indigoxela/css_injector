@@ -61,8 +61,8 @@ function css_injector_schema() {
 function css_injector_uninstall() {
   cache_clear_all('css_injector:*', 'cache', TRUE);
   $rules = db_query("SELECT * FROM {css_injector_rule}", array(), array('fetch' => PDO::FETCH_ASSOC))->fetchAllAssoc('crid');
-  foreach($rules as $id => $rule) {
-    file_unmanaged_delete(_css_injector_rule_path($id));
+  foreach($rules as $crid => $rule) {
+    file_unmanaged_delete(_css_injector_rule_uri($crid));
   }
   db_drop_table('css_injector_rule');
 }

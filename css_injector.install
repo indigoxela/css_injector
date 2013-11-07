@@ -49,10 +49,30 @@ function css_injector_schema() {
         'unsigned' => TRUE,
         'not null' => TRUE,
         'default' => 0),
+      'enabled' => array(
+        'description' => 'Whether the rules should be enabled',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 1),
     ),
     'primary key' => array('crid'),
   );
   return $schema;
+}
+
+/**
+ * Implements hook_update_N().
+ */
+function css_injector_update_7190() {
+  $enabled = array(
+    'description' => 'Whether the rules should be enabled',
+    'type' => 'int',
+    'unsigned' => TRUE,
+    'not null' => TRUE,
+    'default' => 1),
+  );
+  db_add_field( 'css_injector_rule', 'enabled', $enabled);
 }
 
 /**

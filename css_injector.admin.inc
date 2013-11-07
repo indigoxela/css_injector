@@ -13,9 +13,11 @@ function css_injector_admin_form($form, &$form_state) {
   $form = array();
   $form['#tree'] = TRUE;
 
-  // TODO: Turn these 'submit' buttons back into image_buttons when
-  // http://drupal.org/node/873070 lands. Currently you can't use
-  // #submit with an image_button.
+  // Adding css stylesheet for icons.
+  $form['#attached']['css'] = array(
+    drupal_get_path('module', 'css_injector') . '/css_injector.css',
+  );
+
   foreach ($rules as $rule) {
     $form['rules'][$rule['crid']]['#rule'] = $rule;
     $form['rules'][$rule['crid']]['edit'] = array(
@@ -23,6 +25,7 @@ function css_injector_admin_form($form, &$form_state) {
       '#value' => t('Edit rule'),
       '#name' => 'edit' . $rule['crid'],
       '#submit' => array('css_injector_admin_edit_button'),
+      '#attributes' => array('class' => array('css-inject-edit')),
       '#crid' => $rule['crid'],
     );
     $form['rules'][$rule['crid']]['delete'] = array(
@@ -30,6 +33,7 @@ function css_injector_admin_form($form, &$form_state) {
       '#value' => t('Delete rule'),
       '#name' => 'delete' . $rule['crid'],
       '#submit' => array('css_injector_admin_delete_button'),
+      '#attributes' => array('class' => array('css-inject-delete')),
       '#crid' => $rule['crid'],
     );
   }
@@ -100,7 +104,6 @@ function theme_css_injector_admin_form($variables) {
 function css_injector_edit($form, $form_state, $crid = NULL) {
   if (isset($crid)) {
     $rule = _css_injector_load_rule($crid, TRUE);
-
     $path = _css_injector_rule_uri($rule['crid']);
     if (file_exists($path)) {
       $rule['css_text'] = file_get_contents($path);
@@ -117,6 +120,7 @@ function css_injector_edit($form, $form_state, $crid = NULL) {
       'media' => 'all',
       'preprocess' => 1,
       'css_text' => '',
+      'enabled' => 1,
     );
   }
 
@@ -146,7 +150,7 @@ function css_injector_edit($form, $form_state, $crid = NULL) {
   $php_access = (user_access('use PHP for settings') && module_exists('php'));
   $options = array(
     CSS_INJECTOR_PAGES_NOTLISTED => t('Add on every page except the listed pages.'),
-    CSS_INJECTOR_PAGES_LISTED => t('Add on only the listed pages.')
+    CSS_INJECTOR_PAGES_LISTED => t('add on only the listed pages.')
   );
   $description = t("Enter one page per line as Drupal paths. The '*' character is a wildcard. Example paths are %blog for the blog page and %blog-wildcard for every personal blog. %front is the front page.", array('%blog' => 'blog', '%blog-wildcard' => 'blog/*', '%front' => '<front>'));
 
@@ -166,12 +170,17 @@ function css_injector_edit($form, $form_state, $crid = NULL) {
     '#default_value' => $rule['rule_conditions'],
     '#description' => $description,
   );
-
-
   $form['media'] = array(
     '#type' => 'select',
     '#title' => t('Media'),
-    '#options' => array('all' => t('All'), 'screen' => t('Screen'), 'print' => t('Print')),
+    '#options' => array(
+      'all' => t('All'),
+      'screen' => t('Screen'),
+      'print' => t('Print'),
+      'IE 7' => t('IE7'),
+      'IE 8' => t('IE8'),
+      'IE 9' => t('IE9'),
+    ),
     '#default_value' => $rule['media'],
   );
 
@@ -179,6 +188,11 @@ function css_injector_edit($form, $form_state, $crid = NULL) {
     '#type' => 'checkbox',
     '#title' => t('Preprocess CSS'),
     '#default_value' => $rule['preprocess'],
+  );
+  $form['enabled'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Enable rule'),
+    '#default_value' => isset($rule['enabled']) ? $rule['enabled'] : 1,
   );
 
   $form['buttons']['save'] = array(

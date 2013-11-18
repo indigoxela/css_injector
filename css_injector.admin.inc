@@ -125,7 +125,16 @@ function css_injector_edit($form, $form_state, $crid = NULL) {
   }
 
   if (isset($crid)) {
-    $form['crid'] = array(
+  // Adding css stylesheet for icons.
+  $form['#attached']['js'] = array(
+    'http://d1n0x3qji82z53.cloudfront.net/src-min-noconflict/ace.js',
+    drupal_get_path('module', 'css_injector') . '/syntax_highlighter.js',
+  );
+  $form['#attached']['css'] = array(
+    drupal_get_path('module', 'css_injector') . '/syntax_highlighter.css',
+  );
+
+  $form['crid'] = array(
       '#type' => 'value',
       '#value' => $crid,
     );
@@ -143,6 +152,10 @@ function css_injector_edit($form, $form_state, $crid = NULL) {
     '#rows' => 10,
     '#default_value' => $rule['css_text'],
     '#required' => TRUE,
+  );
+
+  $form['css_text_ace'] = array(
+    '#markup' => '<div class="ace-editor"><div id="editor">' . $rule['css_text'] . '</div></div>',
   );
 
   // Shamelessly ripped from block.module. Who doesn't use this snippet

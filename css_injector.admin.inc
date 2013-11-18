@@ -155,6 +155,7 @@ function css_injector_edit($form, $form_state, $crid = NULL) {
   );
 
   $form['css_text_ace'] = array(
+    '#prefix' => '<span class="disable-ace">Disable syntex highlighter</span>',
     '#markup' => '<div class="ace-editor"><div id="editor">' . $rule['css_text'] . '</div></div>',
   );
 

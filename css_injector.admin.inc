@@ -159,6 +159,24 @@ function css_injector_edit($form, $form_state, $crid = NULL) {
     '#markup' => '<div class="ace-editor"><div id="editor">' . $rule['css_text'] . '</div></div>',
   );
 
+  // Define available and default themes
+  $themes = array();
+  $theme_list = list_themes();
+  $default_theme = variable_get('theme_default');
+  foreach ($theme_list as $single_theme) {
+    $themes[$single_theme->name] = $single_theme->info['name'];
+  }
+
+  // Allow selecting themes where styles will be applied to.
+  $form['conditional']['themes'] = array(
+  '#type' => 'select',
+  '#title' => 'Themes to show on',
+  '#default_value' => $default_theme,
+  '#options' => $themes,
+  '#description' => t('Select themes css will be applied to. @theme theme is selected by default.', array('@theme' => $themes[$default_theme])),
+  '#multiple' => TRUE,
+  );
+
   // Shamelessly ripped from block.module. Who doesn't use this snippet
   // of code, really?
   $php_access = (user_access('use PHP for settings') && module_exists('php'));

@@ -159,19 +159,16 @@ function css_injector_edit($form, $form_state, $crid = NULL) {
     '#markup' => '<div class="ace-editor"><div id="editor">' . $rule['css_text'] . '</div></div>',
   );
 
-  // Define available and default themes
   $themes = array();
   $theme_list = list_themes();
   $default_theme = variable_get('theme_default');
   foreach ($theme_list as $single_theme) {
     $themes[$single_theme->name] = $single_theme->info['name'];
   }
-
-  // Allow selecting themes where styles will be applied to.
   $form['conditional']['themes'] = array(
   '#type' => 'select',
   '#title' => 'Themes to show on',
-  '#default_value' => $default_theme,
+  '#default_value' => isset($rule['themes']) ? $rule['themes'] : $default_theme,
   '#options' => $themes,
   '#description' => t('Select themes css will be applied to. @theme theme is selected by default.', array('@theme' => $themes[$default_theme])),
   '#multiple' => TRUE,
@@ -264,9 +261,14 @@ function css_injector_edit_validate($form, &$form_state) {
  * Submit button callback for the CSS rule edit form.
  */
 function css_injector_edit_save($form, &$form_state) {
+  //$themes = implode('//', $form_state['values']['themes']);
   $rule = $form_state['values'];
   $crid = !empty($form_state['values']['crid']) ? $form_state['values']['crid'] : NULL;
+  // Serialize themes list before inserting to databse.
+  $rule['themes'] = serialize($rule['themes']);
   drupal_write_record('css_injector_rule', $rule, empty($crid) ? array() : 'crid');
+  // Unserialize themes list for form state.
+  $rule['themes'] = unserialize($rule['themes']);
   $form_state['values']['rule'] = $rule;
   file_unmanaged_save_data($rule['css_text'], _css_injector_rule_uri($rule['crid']), FILE_EXISTS_REPLACE);
   _css_injector_load_rule(NULL, TRUE);

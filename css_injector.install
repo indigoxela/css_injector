@@ -38,6 +38,10 @@ function css_injector_schema() {
         'description' => 'The data to evaluate when determining if the CSS should be injected',
         'type' => 'text',
         'not null' => TRUE),
+      'rule_themes' => array(
+        'description' => 'Themes that CSS rule will be applied to',
+        'type' => 'text',
+        'not null' => TRUE),
       'media' => array(
         'description' => 'The media type of the CSS file (screen, print, etc.)',
         'type' => 'varchar',
@@ -64,7 +68,7 @@ function css_injector_schema() {
 /**
  * Adds enabled rule and themes list.
  */
-function css_injector_update_7019() {
+function css_injector_update_7001() {
   $enabled = array(
     'description' => 'Whether the rules should be enabled',
     'type' => 'int',
@@ -72,16 +76,13 @@ function css_injector_update_7019() {
     'not null' => TRUE,
     'default' => 1,
   );
-  $default_theme = variable_get('theme_default');
-  $theme_array = serialize(array($default_theme => $default_theme));
   $themes = array(
-    'description' => 'Themes that CSS rule will be applied to.',
+    'description' => 'Themes that CSS rule will be applied to',
     'type' => 'text',
     'not null' => TRUE,
-    'default' => $theme_array,
   );
   db_add_field( 'css_injector_rule', 'enabled', $enabled);
-  db_add_field( 'css_injector_rule', 'themes', $themes);
+  db_add_field( 'css_injector_rule', 'rule_themes', $themes);
 }
 
 /**

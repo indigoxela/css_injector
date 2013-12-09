@@ -116,6 +116,7 @@ function css_injector_edit($form, $form_state, $crid = NULL) {
     $rule = array(
       'title' => '',
       'rule_type' => CSS_INJECTOR_PAGES_NOTLISTED,
+      'rule_themes' => '',
       'rule_conditions' => '',
       'media' => 'all',
       'preprocess' => 1,
@@ -124,21 +125,23 @@ function css_injector_edit($form, $form_state, $crid = NULL) {
     );
   }
 
-  if (isset($crid)) {
   // Adding css stylesheet for icons.
   $form['#attached']['js'] = array(
     'http://d1n0x3qji82z53.cloudfront.net/src-min-noconflict/ace.js',
     drupal_get_path('module', 'css_injector') . '/syntax_highlighter.js',
   );
+
   $form['#attached']['css'] = array(
     drupal_get_path('module', 'css_injector') . '/syntax_highlighter.css',
   );
 
+  if (isset($crid)) {
   $form['crid'] = array(
       '#type' => 'value',
       '#value' => $crid,
     );
   }
+
   $form['title'] = array(
     '#type' => 'textfield',
     '#title' => t('Title'),
@@ -159,16 +162,19 @@ function css_injector_edit($form, $form_state, $crid = NULL) {
     '#markup' => '<div class="ace-editor"><div id="editor">' . $rule['css_text'] . '</div></div>',
   );
 
+  // Get info of site themes.
   $themes = array();
   $theme_list = list_themes();
   $default_theme = variable_get('theme_default');
   foreach ($theme_list as $single_theme) {
     $themes[$single_theme->name] = $single_theme->info['name'];
   }
-  $form['conditional']['themes'] = array(
+  $rule['rule_themes'] = unserialize($rule['rule_themes']);
+
+  $form['conditional']['rule_themes'] = array(
   '#type' => 'select',
   '#title' => 'Themes to show on',
-  '#default_value' => isset($rule['themes']) ? $rule['themes'] : $default_theme,
+  '#default_value' => isset($rule['rule_themes']) ? $rule['rule_themes'] : $default_theme,
   '#options' => $themes,
   '#description' => t('Select themes css will be applied to. @theme theme is selected by default.', array('@theme' => $themes[$default_theme])),
   '#multiple' => TRUE,
@@ -265,10 +271,10 @@ function css_injector_edit_save($form, &$form_state) {
   $rule = $form_state['values'];
   $crid = !empty($form_state['values']['crid']) ? $form_state['values']['crid'] : NULL;
   // Serialize themes list before inserting to databse.
-  $rule['themes'] = serialize($rule['themes']);
+  $rule['rule_themes'] = serialize($rule['rule_themes']);
   drupal_write_record('css_injector_rule', $rule, empty($crid) ? array() : 'crid');
   // Unserialize themes list for form state.
-  $rule['themes'] = unserialize($rule['themes']);
+  $rule['rule_themes'] = unserialize($rule['rule_themes']);
   $form_state['values']['rule'] = $rule;
   file_unmanaged_save_data($rule['css_text'], _css_injector_rule_uri($rule['crid']), FILE_EXISTS_REPLACE);
   _css_injector_load_rule(NULL, TRUE);

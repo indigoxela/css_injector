@@ -8,7 +8,7 @@
       $('body').addClass('has-js');
       var editor = ace.edit("editor");
       editor.getSession().setUseWorker(false);
-      editor.setTheme("ace/theme/ambiance");
+      editor.setTheme("ace/theme/chrome");
       editor.getSession().setMode("ace/mode/css");
 
       editor.getSession().on('change', function(e) {

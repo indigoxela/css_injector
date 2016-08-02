@@ -218,7 +218,7 @@ function _css_injector_load_rule($crid = NULL, $reset = FALSE) {
   static $rules;
   // TODO: Change to drupal_static_fast pattern.
   if (!isset($rules) || $reset) {
-    if (!$reset && ($cache = cache_get('css_injector:rules')) && !empty($cache->data)) {
+    if (!$reset && ($cache = cache_get('css_injector:rules')) && is_array($cache->data)) {
       $rules = $cache->data;
     }
     else {

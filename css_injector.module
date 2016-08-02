@@ -172,7 +172,7 @@ function css_injector_admin() {
       '#type' => 'checkbox',
       '#title' => t('Use Ace syntex highlighter'),
       '#default_value' => variable_get('css_injector_use_ace', 1),
-      '#description' => t("Check if you want to enhance your editing experience with Ace syntex highlighter."),
+      '#description' => t("Check if you want to enhance your editing experience with Ace syntex highlighter. If checked, Ace will be loaded via CDN."),
     );
   } else {
     $form['css_injector_use_ace_error'] = array(
@@ -313,4 +313,18 @@ function _css_injector_get_themes() {
     $themes[$single_theme->name] = $single_theme->info['name'];
   }
   return $themes;
+}
+
+function _css_injector_update_breadcrumb() {
+  // Home » Administration » Configuration » Development
+  $breadcrumb = array(
+    l('Home', ''),
+    l('Administration', 'admin'),
+    l('Configuration', 'admin/config'),
+    l('Development', 'admin/config/development'),
+    l('CSS Injector', 'admin/config/development/css-injector'),
+  );
+
+  // Set Breadcrumbs
+  drupal_set_breadcrumb($breadcrumb);
 }

@@ -8,6 +8,8 @@
  * Form builder function for CSS Injector's main admin page.
  */
 function css_injector_admin_form($form, &$form_state) {
+  _css_injector_update_breadcrumb();
+
   $rules = _css_injector_load_rule(NULL, TRUE);
   $path = drupal_get_path('module', 'css_injector') . '/';
   $form = array();
@@ -102,6 +104,7 @@ function theme_css_injector_admin_form($variables) {
  * Form builder function for the CSS rule edit form.
  */
 function css_injector_edit($form, $form_state, $crid = NULL) {
+  _css_injector_update_breadcrumb();
 
   if (isset($crid) && is_numeric($crid)) {
     $rule = _css_injector_load_rule($crid, TRUE);
@@ -127,9 +130,16 @@ function css_injector_edit($form, $form_state, $crid = NULL) {
   }
 
   if (variable_get('css_injector_use_ace', 1) && !module_exists('ace_editor')) {
-    // Adding css stylesheet for icons.
+    // Adding ace syntex highliter.
+
     $form['#attached']['js'] = array(
-      drupal_get_path('module', 'css_injector') . '/ace/ace.js' => array(
+      'https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.4/ace.js' => array(
+        'preprocess' => FALSE,
+      ),
+      'https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.4/theme-chrome.js' => array(
+        'preprocess' => FALSE,
+      ),
+      'https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.4/mode-css.js' => array(
         'preprocess' => FALSE,
       ),
       drupal_get_path('module', 'css_injector') . '/syntax_highlighter.js' => array(
@@ -304,6 +314,7 @@ function css_injector_edit_save_and_continue($form, &$form_state) {
  * Menu callback -- ask for confirmation of rule deletion.
  */
 function css_injector_delete_confirm($form, &$form_state, $crid) {
+  _css_injector_update_breadcrumb();
   $form['crid'] = array(
     '#type' => 'value',
     '#value' => $crid,

@@ -126,19 +126,21 @@ function css_injector_edit($form, $form_state, $crid = NULL) {
     );
   }
 
-  // Adding css stylesheet for icons.
-  $form['#attached']['js'] = array(
-    drupal_get_path('module', 'css_injector') . '/ace/ace.js' => array(
-      'preprocess' => FALSE,
-    ),
-    drupal_get_path('module', 'css_injector') . '/syntax_highlighter.js' => array(
-      'preprocess' => FALSE,
-    ),
-  );
+  if (variable_get('css_injector_use_ace', 1) && !module_exists('ace_editor')) {
+    // Adding css stylesheet for icons.
+    $form['#attached']['js'] = array(
+      drupal_get_path('module', 'css_injector') . '/ace/ace.js' => array(
+        'preprocess' => FALSE,
+      ),
+      drupal_get_path('module', 'css_injector') . '/syntax_highlighter.js' => array(
+        'preprocess' => FALSE,
+      ),
+    );
 
-  $form['#attached']['css'] = array(
-    drupal_get_path('module', 'css_injector') . '/syntax_highlighter.css',
-  );
+    $form['#attached']['css'] = array(
+      drupal_get_path('module', 'css_injector') . '/syntax_highlighter.css',
+    );
+  }
 
   if (isset($crid)) {
   $form['crid'] = array(
@@ -168,18 +170,19 @@ function css_injector_edit($form, $form_state, $crid = NULL) {
   );
 
   // Get info of site themes.
-  $themes = array();
-  $theme_list = list_themes();
-  $default_theme = variable_get('theme_default');
-  foreach ($theme_list as $single_theme) {
-    $themes[$single_theme->name] = $single_theme->info['name'];
-  }
+  $themes = _css_injector_get_themes();
+
   $rule['rule_themes'] = unserialize($rule['rule_themes']);
+  $default_theme = variable_get('theme_default');
+  $rule_themes = variable_get('css_injector_default_theme', $default_theme);
+  if (isset($rule['rule_themes']) && !empty($rule['rule_themes'])) {
+    $rule_themes = $rule['rule_themes'];
+  }
 
   $form['conditional']['rule_themes'] = array(
   '#type' => 'select',
   '#title' => 'Themes to show on',
-  '#default_value' => isset($rule['rule_themes']) ? $rule['rule_themes'] : $default_theme,
+  '#default_value' => $rule_themes,
   '#options' => $themes,
   '#description' => t('Select themes css will be applied to. @theme theme is selected by default.', array('@theme' => $themes[$default_theme])),
   '#multiple' => TRUE,

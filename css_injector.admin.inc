@@ -11,13 +11,13 @@ function css_injector_admin_form($form, &$form_state) {
   _css_injector_update_breadcrumb();
 
   $rules = _css_injector_load_rule(NULL, TRUE);
-  $path = drupal_get_path('module', 'css_injector') . '/';
+  $path = backdrop_get_path('module', 'css_injector') . '/';
   $form = array();
   $form['#tree'] = TRUE;
 
   // Adding css stylesheet for icons.
   $form['#attached']['css'] = array(
-    drupal_get_path('module', 'css_injector') . '/css_injector.css',
+    backdrop_get_path('module', 'css_injector') . '/css_injector.css',
   );
 
   foreach ($rules as $rule) {
@@ -74,7 +74,7 @@ function theme_css_injector_admin_form($variables) {
       $rule = $form['rules'][$crid]['#rule'];
       $row[] = check_plain($rule['title']);
       $row[] = _css_injector_rule_uri($rule['crid']);
-      $row[] = drupal_render($form['rules'][$crid]);
+      $row[] = backdrop_render($form['rules'][$crid]);
       $rows[] = $row;
     }
   }
@@ -96,7 +96,7 @@ function theme_css_injector_admin_form($variables) {
   $rows[] = $row;
 
   $output = theme('table', array('header' => $headers, 'rows' => $rows));
-  $output .= drupal_render_children($form);
+  $output .= backdrop_render_children($form);
   return $output;
 }
 
@@ -129,7 +129,7 @@ function css_injector_edit($form, $form_state, $crid = NULL) {
     );
   }
 
-  if (variable_get('css_injector_use_ace', 1) && !module_exists('ace_editor')) {
+  if (config_get('css_injector.settings', 'css_injector_use_ace') && !module_exists('ace_editor')) {
     // Adding ace syntex highliter.
 
     $form['#attached']['js'] = array(
@@ -142,13 +142,13 @@ function css_injector_edit($form, $form_state, $crid = NULL) {
       'https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.4/mode-css.js' => array(
         'preprocess' => FALSE,
       ),
-      drupal_get_path('module', 'css_injector') . '/syntax_highlighter.js' => array(
+      backdrop_get_path('module', 'css_injector') . '/syntax_highlighter.js' => array(
         'preprocess' => FALSE,
       ),
     );
 
     $form['#attached']['css'] = array(
-      drupal_get_path('module', 'css_injector') . '/syntax_highlighter.css',
+      backdrop_get_path('module', 'css_injector') . '/syntax_highlighter.css',
     );
   }
 
@@ -183,8 +183,11 @@ function css_injector_edit($form, $form_state, $crid = NULL) {
   $themes = _css_injector_get_themes();
 
   $rule['rule_themes'] = unserialize($rule['rule_themes']);
-  $default_theme = variable_get('theme_default');
-  $rule_themes = variable_get('css_injector_default_theme', $default_theme);
+
+  $default_theme = config_get('system.core', 'theme_default');
+  $rule_themes = config_get('css_injector.settings', 'css_injector_default_theme');
+  $rule_themes = isset($rule_themes) ? $rule_themes : $default_theme;
+
   if (isset($rule['rule_themes']) && !empty($rule['rule_themes'])) {
     $rule_themes = $rule['rule_themes'];
   }
@@ -205,11 +208,11 @@ function css_injector_edit($form, $form_state, $crid = NULL) {
     CSS_INJECTOR_PAGES_NOTLISTED => t('Add on every page except the listed pages.'),
     CSS_INJECTOR_PAGES_LISTED => t('add on only the listed pages.')
   );
-  $description = t("Enter one page per line as Drupal paths. The '*' character is a wildcard. Example paths are %blog for the blog page and %blog-wildcard for every personal blog. %front is the front page.", array('%blog' => 'blog', '%blog-wildcard' => 'blog/*', '%front' => '<front>'));
+  $description = t("Enter one page per line as Backdrop paths. The '*' character is a wildcard. Example paths are %blog for the blog page and %blog-wildcard for every personal blog. %front is the front page.", array('%blog' => 'blog', '%blog-wildcard' => 'blog/*', '%front' => '<front>'));
 
   if ($php_access) {
     $options[CSS_INJECTOR_PHP] = t('Add if the following PHP code outputs a nonzero value (PHP-mode, experts only).');
-    $description .= ' ' . t('If the PHP-mode is chosen, enter PHP code between %php. Note that executing incorrect PHP-code can break your Drupal site.', array('%php' => '<?php ?>'));
+    $description .= ' ' . t('If the PHP-mode is chosen, enter PHP code between %php. Note that executing incorrect PHP-code can break your Backdrop site.', array('%php' => '<?php ?>'));
   }
   $form['conditional']['rule_type'] = array(
     '#type' => 'radios',
@@ -290,14 +293,14 @@ function css_injector_edit_save($form, &$form_state) {
   $crid = !empty($form_state['values']['crid']) ? $form_state['values']['crid'] : NULL;
   // Serialize themes list before inserting to databse.
   $rule['rule_themes'] = serialize($rule['rule_themes']);
-  drupal_write_record('css_injector_rule', $rule, empty($crid) ? array() : 'crid');
+  backdrop_write_record('css_injector_rule', $rule, empty($crid) ? array() : 'crid');
   // Unserialize themes list for form state.
   $rule['rule_themes'] = unserialize($rule['rule_themes']);
   $form_state['values']['rule'] = $rule;
   file_unmanaged_save_data($rule['css_text'], _css_injector_rule_uri($rule['crid']), FILE_EXISTS_REPLACE);
   _css_injector_load_rule(NULL, TRUE);
 
-  drupal_set_message(t('Your CSS injection rule %title was saved.', array('%title' => $rule['title'])));
+  backdrop_set_message(t('Your CSS injection rule %title was saved.', array('%title' => $rule['title'])));
   $form_state['redirect'] = 'admin/config/development/css-injector';
 }
 

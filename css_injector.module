@@ -24,22 +24,6 @@ define('CSS_INJECTOR_PAGES_LISTED', 1);
 define('CSS_INJECTOR_PHP', 2);
 
 /**
- * Implements hook_help().
- */
-function css_injector_help($path, $arg) {
-  $output = '';
-  switch ($path) {
-    case 'admin/config/modules#description':
-      $output .= t('Allows administrators to inject CSS into the page output based on configurable rules.');
-      break;
-    case 'admin/config/development/css-injector':
-      $output .= '<p>' . t('Use CSS injection rules to add small snippets of CSS to the page output when specific criteria are met. For example, a simple rule could change the page background color at night or float a particular div to the right on node editing pages.') . '</p>';
-      break;
-  }
-  return $output;
-}
-
-/**
  * Implements hook_init().
  * Checks to see whether any CSS files should be added to the current page,
  * based on rules configured by the site administrator.
@@ -57,13 +41,13 @@ function css_injector_init() {
             case 'all':
             case 'screen':
             case 'print':
-              drupal_add_css($file_uri, array('type' => 'file','group' => CSS_THEME,'media' => $css_rule['media'],'preprocess' => $css_rule['preprocess']));
+              backdrop_add_css($file_uri, array('type' => 'file','group' => CSS_THEME,'media' => $css_rule['media'],'preprocess' => $css_rule['preprocess']));
               break;
 
             case 'IE 7':
             case 'IE 8':
             case 'IE 9':
-              drupal_add_css($file_uri, array(
+              backdrop_add_css($file_uri, array(
                 'group' => CSS_THEME,
                 'browsers' => array('IE' => $css_rule['media'], '!IE' => FALSE),
                 'preprocess' => $css_rule['preprocess'])
@@ -106,7 +90,7 @@ function css_injector_menu() {
     'admin/config/development/css-injector/settings' => array(
       'title' => 'CSS injector module settings',
       'description' => 'Settings page for CSS injector module.',
-      'page callback' => 'drupal_get_form',
+      'page callback' => 'backdrop_get_form',
       'page arguments' => array('css_injector_admin'),
       'access arguments' => array('administer css injection settings'),
       'type' => MENU_LOCAL_ACTION,
@@ -114,7 +98,7 @@ function css_injector_menu() {
     'admin/config/development/css-injector' => array(
       'title' => 'CSS injector',
       'description' => 'Add CSS to the page output based on configurable rules.',
-      'page callback' => 'drupal_get_form',
+      'page callback' => 'backdrop_get_form',
       'page arguments' => array('css_injector_admin_form'),
       'access arguments' => array('administer css injection'),
       'file' => 'css_injector.admin.inc',
@@ -122,7 +106,7 @@ function css_injector_menu() {
     ),
     'admin/config/development/css-injector/edit' => array(
       'title' => 'Edit CSS injector rule',
-      'page callback' => 'drupal_get_form',
+      'page callback' => 'backdrop_get_form',
       'page arguments' => array('css_injector_edit'),
       'access arguments' => array('administer css injection'),
       'file' => 'css_injector.admin.inc',
@@ -130,7 +114,7 @@ function css_injector_menu() {
     ),
     'admin/config/development/css-injector/add' => array(
       'title' => 'Add CSS injector rule',
-      'page callback' => 'drupal_get_form',
+      'page callback' => 'backdrop_get_form',
       'page arguments' => array('css_injector_edit'),
       'access arguments' => array('administer css injection'),
       'file' => 'css_injector.admin.inc',
@@ -138,7 +122,7 @@ function css_injector_menu() {
     ),
     'admin/config/development/css-injector/delete' => array(
       'title' => 'Delete CSS injector rule',
-      'page callback' => 'drupal_get_form',
+      'page callback' => 'backdrop_get_form',
       'page arguments' => array('css_injector_delete_confirm'),
       'access arguments' => array('administer css injection'),
       'file' => 'css_injector.admin.inc',
@@ -155,8 +139,9 @@ function css_injector_admin() {
   $form = array();
 
   $themes = _css_injector_get_themes();
-  $default_theme = variable_get('theme_default');
-  $rule_themes = variable_get('css_injector_default_theme', $default_theme);
+  $default_theme = config_get('system.core', 'theme_default');
+  $rule_themes = config_get('css_injector.settings', 'css_injector_default_theme');
+  $rule_themes = isset($rule_themes) ? $rule_themes: $default_theme;
 
   $form['css_injector_default_theme'] = array(
     '#type' => 'select',
@@ -171,7 +156,7 @@ function css_injector_admin() {
     $form['css_injector_use_ace'] = array(
       '#type' => 'checkbox',
       '#title' => t('Use Ace syntex highlighter'),
-      '#default_value' => variable_get('css_injector_use_ace', 1),
+      '#default_value' => config_get('css_injector.settings', 'css_injector_use_ace') ?: 1,
       '#description' => t("Check if you want to enhance your editing experience with Ace syntex highlighter. If checked, Ace will be loaded via CDN."),
     );
   } else {
@@ -186,6 +171,7 @@ function css_injector_admin() {
     '#markup' => '<br>' . t('If you want to import your css injector files from dev site to production, you can use !this sandox module. </br> Be aware, sandbox modules are not supported and you are using it on your own risk.', array('!this' => l('CSS Injector import','https://www.drupal.org/sandbox/stillfinder/2597592'))) . '</br>',
   );
 
+  $form['#config'] = 'css_injector.settings';
   return system_settings_form($form);
 }
 
@@ -216,7 +202,7 @@ function css_injector_permission() {
  */
 function _css_injector_load_rule($crid = NULL, $reset = FALSE) {
   static $rules;
-  // TODO: Change to drupal_static_fast pattern.
+  // TODO: Change to backdrop_static_fast pattern.
   if (!isset($rules) || $reset) {
     if (!$reset && ($cache = cache_get('css_injector:rules')) && is_array($cache->data)) {
       $rules = $cache->data;
@@ -248,7 +234,7 @@ function _css_injector_delete_rule($crid) {
     db_delete('css_injector_rule')
       ->condition('crid', $crid)
       ->execute();
-    drupal_set_message(t('The CSS rule %title has been deleted.', array('%title' => $rule['title'])));
+    backdrop_set_message(t('The CSS rule %title has been deleted.', array('%title' => $rule['title'])));
   }
 }
 
@@ -263,11 +249,11 @@ function _css_injector_evaluate_rule($css_rule = array()) {
   // Match path if necessary.
   if (!empty($css_rule['rule_conditions'])) {
     if ($css_rule['rule_type'] < CSS_INJECTOR_PHP) {
-      $path = drupal_get_path_alias($_GET['q']);
+      $path = backdrop_get_path_alias($_GET['q']);
       // Compare with the internal and path alias (if any).
-      $page_match = drupal_match_path($path, $css_rule['rule_conditions']);
+      $page_match = backdrop_match_path($path, $css_rule['rule_conditions']);
       if ($path != $_GET['q']) {
-        $page_match = $page_match || drupal_match_path($_GET['q'], $css_rule['rule_conditions']);
+        $page_match = $page_match || backdrop_match_path($_GET['q'], $css_rule['rule_conditions']);
       }
       // When $css_rule['rule_type'] has a value of
       // CSS_INJECTOR_PAGES_NOTLISTED, the rule is matched on
@@ -330,5 +316,35 @@ function _css_injector_update_breadcrumb() {
     l('CSS Injector', 'admin/config/development/css-injector'),
   );
 
-  drupal_set_breadcrumb($breadcrumb);
+  backdrop_set_breadcrumb($breadcrumb);
 }
+
+
+// ==============================
+
+/*
+ * Added by Vincent Stemen  Tue Tue Apr 17 2018  for porting to 
+ * Backdrop.
+ */
+
+/*
+ * Implements hook_autoload_info()
+ */ 
+function css_injector_autoload_info() {
+  return array(
+    'CSSInjectorTest' => 'css_injector.test',
+  );
+}
+
+
+/*
+ *  Implements hook_config_info()
+ */
+function css_injector_config_info() {
+  $prefixes['css_injector.settings'] = array(
+    'label' => t('CSS injector settings'),
+    'group' => t('Configuration'),
+  );
+  return $prefixes;
+}
+

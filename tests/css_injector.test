@@ -5,21 +5,14 @@
  * Tests for css_injector.
  */
 
-class CSSInjectorTest extends DrupalWebTestCase {
+class CSSInjectorTest extends BackdropWebTestCase {
 
   protected $privileged_user;
 
-  public static function getInfo() {
-    return array(
-      'name' => t('CSS Injector Functionality'),
-      'description' => t('CSS Injector Functionality.'),
-      'group' => 'CSS Injector',
-    );
-  }
   function setUp() {
     parent::setUp(array('css_injector', 'php'));
-    $privileged_user = $this->drupalCreateUser(array('administer css injection', 'use PHP for settings'));
-    $this->drupalLogin($privileged_user);
+    $privileged_user = $this->backdropCreateUser(array('administer css injection', 'use PHP for settings'));
+    $this->backdropLogin($privileged_user);
   }
 
   /**
@@ -74,18 +67,18 @@ class CSSInjectorTest extends DrupalWebTestCase {
         'rule_type' => $rule['rule_type'],
         'rule_conditions' => $rule['rule_conditions'],
       );
-      $this->drupalPost($add_url, $edit, t('Save'));
+      $this->backdropPost($add_url, $edit, t('Save'));
       $this->assertRaw(t('Your CSS injection rule %rule was saved', array('%rule' => $rule['title'])));
       $file = 'css_injector_' . $index . '.css';
 
       // visit 'pages_with' to see if it's there.
       foreach ($rule['pages_with'] as $page) {
-        $this->drupalGet($page);
+        $this->backdropGet($page);
         $this->assertRaw($file, t('Rule %rule file %file was found on page %page', array('%rule' => $rule['crid'], '%file' => $file, '%page' => $page )));
       }
       // visit 'pages_without' and assert that the CSS is not there.
       foreach ($rule['pages_without'] as $page) {
-        $this->drupalGet($page);
+        $this->backdropGet($page);
         $this->assertNoRaw($file, t('Rule %rule file %file not found on page %page', array('%rule' => $rule['crid'], '%file' => $file, '%page' => $page )));
       }
 
@@ -96,17 +89,17 @@ class CSSInjectorTest extends DrupalWebTestCase {
     // Now delete each one and make sure that things work correctly.
     foreach ($rules as $index => $rule) {
       $delete_url = $base_url . '/delete/' . $index;
-      $this->drupalPost($delete_url, array(), t('Delete'));
+      $this->backdropPost($delete_url, array(), t('Delete'));
       $this->assertRaw(t('The CSS rule %rule has been deleted', array('%rule' => $rule['title'])));
 
       // visit 'pages_with' to verify it's no longer there.
       foreach ($rule['pages_with'] as $page) {
-        $this->drupalGet($page);
+        $this->backdropGet($page);
         $this->assertNoRaw($file, t('Rule %rule file %file no longer found on page %page', array('%rule' => $rule['crid'], '%file' => $file, '%page' => $page )));
       }
       // visit 'pages_without' and assert that the CSS is not there either.
       foreach ($rule['pages_without'] as $page) {
-        $this->drupalGet($page);
+        $this->backdropGet($page);
         $this->assertNoRaw($file, t('Rule %rule file %file not found on page %page', array('%rule' => $rule['crid'], '%file' => $file, '%page' => $page )));
       }
 

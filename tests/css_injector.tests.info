@@ -1,0 +1,5 @@
+[CSSInjectorTest]
+name = CSS Injector Functionality
+description = CSS Injector Functionality
+group = CSS Injector
+file = css_injector.test

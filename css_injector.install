@@ -91,6 +91,23 @@ function css_injector_update_7002() {
 }
 
 /**
+ * Move css_injector settings from Drupal 7 variables to config.
+ */
+function css_injector_update_1000() {
+  // Migrate variables to config.
+  $default_theme = config_get('system.core', 'theme_default');
+
+  $config = config('css_injector.settings');
+  $config->set('css_injector_use_ace', update_variable_get('css_injector_use_ace', TRUE));
+  $config->set('css_injector_default_theme', update_variable_get('css_injector_default_theme', $default_theme));
+  $config->save();
+
+  // Delete variables.
+  update_variable_del('css_injector_use_ace');
+  update_variable_del('css_injector_default_theme');
+}
+
+/**
  * Implements hook_uninstall().
  */
 function css_injector_uninstall() {

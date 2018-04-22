@@ -201,9 +201,15 @@ function css_injector_edit($form, $form_state, $crid = NULL) {
   '#multiple' => TRUE,
   );
 
-  // Shamelessly ripped from block.module. Who doesn't use this snippet
-  // of code, really?
+  // XXX The php filter that allows embedded PHP code/snippets to be evaluated
+  // has been removed from Backdrop core.  I will leave the code that uses it
+  // in for now, until we feel sure it is never going to re-surface as
+  // a contrib module.  If not, it should eventually be removed.
+  // There has been a lot of discussion on the issue.
+  // https://www.drupal.org/project/drupal/issues/1203886
+  // - Vincent Stemen Sun Apr 22 2018  
   $php_access = (user_access('use PHP for settings') && module_exists('php'));
+
   $options = array(
     CSS_INJECTOR_PAGES_NOTLISTED => t('Add on every page except the listed pages.'),
     CSS_INJECTOR_PAGES_LISTED => t('add on only the listed pages.')

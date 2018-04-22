@@ -319,24 +319,6 @@ function _css_injector_update_breadcrumb() {
   backdrop_set_breadcrumb($breadcrumb);
 }
 
-
-// ==============================
-
-/*
- * Added by Vincent Stemen  Tue Tue Apr 17 2018  for porting to 
- * Backdrop.
- */
-
-/*
- * Implements hook_autoload_info()
- */ 
-function css_injector_autoload_info() {
-  return array(
-    'CSSInjectorTest' => 'css_injector.test',
-  );
-}
-
-
 /*
  *  Implements hook_config_info()
  */

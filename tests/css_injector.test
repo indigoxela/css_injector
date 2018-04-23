@@ -10,8 +10,15 @@ class CSSInjectorTest extends BackdropWebTestCase {
   protected $privileged_user;
 
   function setUp() {
-    parent::setUp(array('css_injector', 'php'));
-    $privileged_user = $this->backdropCreateUser(array('administer css injection', 'use PHP for settings'));
+//  XXX The php filter module is removed from Backdrop.
+//      If it never becomes available as a contrib module, then this code
+//      can be completely removed.  In the mean time, it is commented out to 
+//      easily be re-introduced.
+//  parent::setUp(array('css_injector', 'php'));
+//  $privileged_user = $this->backdropCreateUser(array('administer css injection', 'use PHP for settings'));
+
+    parent::setUp(array('css_injector'));
+    $privileged_user = $this->backdropCreateUser(array('administer css injection'));
     $this->backdropLogin($privileged_user);
   }
 
@@ -47,6 +54,12 @@ class CSSInjectorTest extends BackdropWebTestCase {
         'pages_with' => array('user'), // Test page where it should show up.
         'pages_without' => array(''), // front page
       ),
+    );
+
+// XXX This test is removed from $rules as part of the Backdrop port. See
+//     the comment above about the php module.
+
+/*
       3 => array(
         'crid' => 3,
         'title' => t('Rule 3: blue background on admin page'),
@@ -56,8 +69,7 @@ class CSSInjectorTest extends BackdropWebTestCase {
         'pages_with' => array('admin/config/development/css-injector'), // Test page where it should show up.
         'pages_without' => array('user'), // front page should not have this one.
       ),
-
-    );
+*/
 
     foreach ($rules as $index => $rule) {
       // Create the rule.

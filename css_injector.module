@@ -166,11 +166,6 @@ function css_injector_admin() {
     );
   }
 
-  $form['css_injector_import'] = array(
-    '#type' => 'markup',
-    '#markup' => '<br>' . t('If you want to import your css injector files from dev site to production, you can use !this sandox module. </br> Be aware, sandbox modules are not supported and you are using it on your own risk.', array('!this' => l('CSS Injector import','https://www.drupal.org/sandbox/stillfinder/2597592'))) . '</br>',
-  );
-
   $form['#config'] = 'css_injector.settings';
   return system_settings_form($form);
 }

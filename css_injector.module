@@ -156,7 +156,7 @@ function css_injector_admin() {
     $form['css_injector_use_ace'] = array(
       '#type' => 'checkbox',
       '#title' => t('Use Ace syntex highlighter'),
-      '#default_value' => config_get('css_injector.settings', 'css_injector_use_ace') ?: 1,
+      '#default_value' => config_get('css_injector.settings', 'css_injector_use_ace'),
       '#description' => t("Check if you want to enhance your editing experience with Ace syntex highlighter. If checked, Ace will be loaded via CDN."),
     );
   } else {

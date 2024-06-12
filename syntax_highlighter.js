@@ -1,7 +1,7 @@
 (function($) {
 
   /**
-   * Add syntext highlighter for textarea.
+   * Add syntax highlighter for textarea.
    */
   Backdrop.behaviors.slideUpDown = {
     attach: function(context, settings) {
